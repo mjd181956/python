@@ -1,0 +1,103 @@
+一、设置用户组，用户
+sudo mkdir /opt  
+sudo chown tarena /opt -R //设置linux 用户
+sudo chgrp tarena /opt -R  //设置linux 用户组
+二、nfs服务
+sudo apt-get install nfs-kernel-server rpcbind  //安装nfs服务
+    /etc/exports                           NFS服务的主要配置文件
+    /usr
+    /sbin/exportfs                         NFS服务的管理命令
+    /usr/sbin/showmount                    客户端的查看命令
+    /var/lib/nfs/etab                      记录NFS分享出来的目录的完整权限设定值
+    /var/lib/nfs/xtab                      记录曾经登录过的客户端信息
+
+sudo vi /etc/exports    //打开nfs服务的主要配置文件
+/home/zuozhongkai/linux/nfs *(rw,sync,no_root_squash)   //配置nfs文件夹权限
+sudo /etc/init.d/nfs-kernel-server restart 重启NFS服务
+
+三，SSH服务
+sudo apt-get install openssh-server //安装ssh服务
+ssh 的配置文件为/etc/ssh/sshd_config
+
+四，交叉编译器依赖库
+sudo apt-get install lsb-core lib32stdc++6
+
+五、github备份
+配置git
+　　打开Git Bash输入以下命令
+　　如果还没输入全局配置就先把这个全局配置输入上去
+    Git 全局设置:
+        git config --global user.name "ASxx" 
+        git config --global user.email "123456789@qq.com"
+六、裸机编程
+    1，编译代码：
+        (1)将程序编译成.o文件
+            arm-linux-gnueabihf-gcc -g -c led.s -o led.o
+        (2)将.o文件链接到程序执行地址0x87800000 
+            确定了链接地址以后就可以使用 arm-linux-gnueabihf-ld 来将前面编译出来的 led.o 文件链
+        接到 0X87800000 这个地址，使用如下命令：
+        arm-linux-gnueabihf-ld -Ttext 0X87800000 led.o -o led.elf
+        (3)将.elf文件转换为.bin文件，RAM识别.bin文件
+            arm-linux-gnueabihf-objcopy 更像一个格式转换工具，我们需要用它将 led.elf 文件转换为
+        led.bin 文件，命令如下：
+        arm-linux-gnueabihf-objcopy -O binary -S -g led.elf led.bin
+        
+        (4)反汇编(与烧写文件无关)
+            大多数情况下我们都是用 C 语言写试验例程的，有时候需要查看其汇编代码来调试代码，
+        因此就需要进行反汇编，一般可以将 elf 文件反汇编，比如如下命令：
+        arm-linux-gnueabihf-objdump -D led.elf > led.dis
+
+七、tftp服务
+1.安装tftp服务器
+    ​ sudo apt-get install tftpd-hpa #安装tftp服务器
+    ​ sudo apt-get install tftp-hpa #安装tftp客户端
+    ​ sudo apt-get install xinetd #守护tftp
+2.配置tftp
+    tftp服务是由xinetd所设定的，所以要修改tftp文件
+    sudo vi /etc/xinetd.d/tftp
+
+    service tftp{
+    socket_type = dgram
+    protocol = udp
+    wait = yes
+    user = root
+    server = /usr/sbin/in.tftpd
+    server_args = -s /tftpboot #指定tftp服务器目录，即上一步新建文件夹的目录
+    disable = no #开启tftp服务器
+    per_source = 11
+    cps = 100 2
+    flags = IPv4}
+
+3.配置tftpd-hpa文件
+
+​在/etc/default/目录下存在文件tftpd-hpa，修改其默认配置为以下
+​sudo gedit /etc/default/tftp-hpa
+
+    TFTP_USERNAME="tftp"
+    TFTP_DIRECTORY="/tftpboot" #这里选择服务器资源路径
+    TFTP_ADDRESS="0.0.0.0:69"
+    TFTP_OPTIONS="-l -s -c" #这里是选项,-c是可以上传文件的参数，-s是指定tftpd-hpa服务目录，上面已经指定
+
+4.重启tftp 服务
+    修改完配置之后使用命令：service tftpd-hpa restart重启服务
+八、linux鼠标中键禁止命令
+
+在Linux终端中输入：xmodmap -e "pointer=1 25 3 4 5 6 7 2"
+禁止鼠标中键，按下回车后提示
+warning:Only changing the first 8 of 16 buttons
+表示禁止成功
+
+如果想要回复鼠标按键中键功能可以输入下面命令：
+xmodmap -e "pointer = 1 2 3 4 5 6 7 8"
+
+九、linux中重启环境变量
+    在使用Linux驱动开发时有时会遇到这样的问题，当将交叉编译工具已经移植到Linux中了，环境变量已经配置好了，并且已经重启过Linux，但是交叉编译工具还是无法使用，这时可以使用下面的命令重启环境变量
+        source /etc/profile；
+    这样就可以解决问题了
+十、屏蔽内核printk打印信息的命令：
+    echo 0 > /proc/sys/kernel/printk
+
+VMware 16 Pro 密钥：
+    ZF3R0-FHED2-M80TY-8QYGC-NPKYF
+    YF390-0HF8P-M81RQ-2DXQE-M2UT6
+    ZF71R-DMX85-08DQY-8YMNC-PPHV8

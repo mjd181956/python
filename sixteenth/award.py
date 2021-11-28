@@ -43,7 +43,7 @@ for i in workbook.sheets:
 
 #遍历工作表/并删除指定工作表
 for Excel in workbook.sheets:
-    adddate(Excel)
+    adddate( )
     time.sleep(2)
 
 #对数据进行保存，并关闭工作簿

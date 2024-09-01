@@ -1,0 +1,8 @@
+# from 导入的内容，已后导入为准（覆盖先导入的变量）
+
+# 1.通过给变量，函数，类 通过as起别名
+from hi import say as say_hi
+from hello import say as say_hello
+
+say_hi()
+say_hello()
